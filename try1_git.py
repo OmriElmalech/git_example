@@ -16,18 +16,23 @@ start_time = time.time()
 s3 = boto3.resource('s3')
 BUCKET = "oe-algotrading"
 
-
+today = (str(datetime.now()).split('-')[0] + '-' + str(datetime.now()).split('-')[1] + '-' + str(datetime.now()).split('-')[2].split(' ')[0])
 tickers_list = sys.argv[1]
 # tickers_list = 'INTC'
 run_flag = 'on'
 data_avail_flag = 0
 
+if os.path.exists('run_log_'+today+'.txt'):
+  os.remove('run_log_'+today+'.txt')
+else:
+    log_file = open('run_log_'+today+'.txt', 'w')
+    log_file.write('run log \n run started: '+str(datetime.now()))
+    log_file.close
 
 hist = yf.download(tickers=tickers_list, period="2d", interval="1d", progress=False).head(1)
 d = yf.download(tickers=tickers_list, period="1d", interval="1m", progress=False).tail(1)
 d = pd.concat([hist,d])
 
-today = (str(datetime.now()).split('-')[0] + '-' + str(datetime.now()).split('-')[1] + '-' + str(datetime.now()).split('-')[2].split(' ')[0])
 out_put_path = "/home/ubuntu/temp/"+tickers_list+"/"+today+"/"
 if os.path.exists(out_put_path):
     shutil.rmtree(out_put_path)
@@ -175,9 +180,14 @@ while 1:
         (d.head(d.shape[0]-1)).to_csv(out_put_path  + local_file_name)
         print('file: '+ local_file_name +' was saved locally')
 
-        output_file_name = tickers_list+'_'+ str(datetime.now()) +'_'+str(file_count) +'.csv'
-        s3.Bucket(BUCKET).upload_file(out_put_path + local_file_name, "from_ubuntu/hist_data/"+tickers_list+"_hist_daily/"+today+"/"+output_file_name)
-        print('file: '+output_file_name+' was written to S3')
+        try:
+            output_file_name = tickers_list+'_'+ str(datetime.now()) +'_'+str(file_count) +'.csv'
+            s3.Bucket(BUCKET).upload_file(out_put_path + local_file_name, "from_ubuntu/hist_data/"+tickers_list+"_hist_daily/"+today+"/"+output_file_name)
+            print('file: '+output_file_name+' was written to S3')
+        except Exception as no_s3_write:
+            log_file = open('run_log_'+today+'.txt', 'a')
+            log_file.write('\n'+str(datetime.now())+' -->  '+tickers_list+': '+no_s3_write+'\n')
+            log_file.close
 
         d = d.tail(3)
         if datetime.now() > trade_start and datetime.now() < trade_end:
