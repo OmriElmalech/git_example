@@ -199,6 +199,9 @@ while 1:
             d = yf.download(tickers=tickers_list, period="1d", interval="1m", progress=False).tail(1)
             file_count = 1
             run_flag = 'off'
+            today = (str(datetime.now()).split('-')[0] + '-' + str(datetime.now()).split('-')[1] + '-' + str(datetime.now()).split('-')[2].split(' ')[0])
+            trade_start = datetime(int(str(datetime.now()).split('-')[0]),int(str(datetime.now()).split('-')[1]),int(str(datetime.now()).split('-')[2].split(' ')[0]), 13, 29, 45, 0)
+            trade_end = datetime(int(str(datetime.now()).split('-')[0]),int(str(datetime.now()).split('-')[1]),int(str(datetime.now()).split('-')[2].split(' ')[0]), 20, 0, 0)
 
 
         file_count = file_count + 1
