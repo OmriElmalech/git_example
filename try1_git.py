@@ -3,7 +3,7 @@ import sys
 import boto3
 import shutil
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 import os
 from turtle import clear
 import numpy as np
@@ -43,13 +43,12 @@ local_file_name = ''
 count = 0
 file_count = 1
 
-
 trade_flag = 'off'
 trade_start = datetime(int(str(datetime.now()).split('-')[0]),int(str(datetime.now()).split('-')[1]),int(str(datetime.now()).split('-')[2].split(' ')[0]), 13, 29, 45, 0)
-
-#trade_start = datetime(int(str(datetime.now()).split('-')[0]),int(str(datetime.now()).split('-')[1]),int(str(datetime.now()).split('-')[2].split(' ')[0]), 5, 19, 45, 0)
-
 trade_end = datetime(int(str(datetime.now()).split('-')[0]),int(str(datetime.now()).split('-')[1]),int(str(datetime.now()).split('-')[2].split(' ')[0]), 20, 0, 0)
+
+# trade_start = datetime.now()
+# trade_end = datetime.now() + timedelta(minutes=3)
 
 print('now is:')
 print(datetime.now())
@@ -84,9 +83,12 @@ while 1:
         # print('count = ',count)
         # print('time = ',datetime.now())
         new_data = yf.download(tickers=tickers_list, period="1d", interval="1m", progress=False).tail(1)
+        print(new_data)
         d = pd.concat([d,new_data])
         # d = d.append(new_data)
-        time.sleep(9.6)
+        next_minute = datetime.now()+timedelta(minutes=1)-timedelta(seconds=datetime.now().second,microseconds=datetime.now().microsecond)
+        while datetime.now() < next_minute
+            time.sleep(1)
         data_avail_flag = 1
 
         if count == 90:
@@ -192,6 +194,7 @@ while 1:
         d = d.tail(3)
         if datetime.now() > trade_start and datetime.now() < trade_end:
             run_flag = 'on'
+            file_count = file_count + 1
         else:
             time.sleep(60)
             data_avail_flag = 0
@@ -199,11 +202,20 @@ while 1:
             d = yf.download(tickers=tickers_list, period="1d", interval="1m", progress=False).tail(1)
             file_count = 1
             run_flag = 'off'
-            today = (str(datetime.now()).split('-')[0] + '-' + str(datetime.now()).split('-')[1] + '-' + str(datetime.now()).split('-')[2].split(' ')[0])
-            trade_start = datetime(int(str(datetime.now()).split('-')[0]),int(str(datetime.now()).split('-')[1]),int(str(datetime.now()).split('-')[2].split(' ')[0]), 13, 29, 45, 0)
-            trade_end = datetime(int(str(datetime.now()).split('-')[0]),int(str(datetime.now()).split('-')[1]),int(str(datetime.now()).split('-')[2].split(' ')[0]), 20, 0, 0)
+            
+            today = (str(datetime.now()).split('-')[0] + '-' + str(datetime.now()).split('-')[1] + '-' + str(datetime.now()).split('-')[2].split(' ')[0]) + timedelta(days=1)
+            trade_start = trade_start + timedelta(days=1)
+            sleep_time = round((trade_start - datetime.now()).total_seconds())
+            trade_end = trade_end + timedelta(days=1)
+            file_count = 0
+            if os.path.exists(out_put_path):
+                shutil.rmtree(out_put_path)
+                out_put_path = "/home/ubuntu/temp/"+tickers_list+"/"+today+"/"
+                os.makedirs(out_put_path)
+            else:
+                out_put_path = "/home/ubuntu/temp/"+tickers_list+"/"+today+"/"
+                os.makedirs(out_put_path)
 
 
-        file_count = file_count + 1
 
 
