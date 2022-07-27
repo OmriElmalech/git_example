@@ -33,7 +33,7 @@ hist = yf.download(tickers=tickers_list, period="2d", interval="1d", progress=Fa
 d = yf.download(tickers=tickers_list, period="1d", interval="1m", progress=False).tail(1)
 d = pd.concat([hist,d])
 
-out_put_path = "/home/ubuntu/temp/"+tickers_list+"/"+today+"/"
+out_put_path = "/home/ubuntu/algo_temp/"+tickers_list+"/"+today+"/"
 if os.path.exists(out_put_path):
     shutil.rmtree(out_put_path)
     os.makedirs(out_put_path)
@@ -210,10 +210,10 @@ while 1:
             file_count = 0
             if os.path.exists(out_put_path):
                 shutil.rmtree(out_put_path)
-                out_put_path = "/home/ubuntu/temp/"+tickers_list+"/"+today+"/"
+                out_put_path = "/home/ubuntu/algo_temp/"+tickers_list+"/"+today+"/"
                 os.makedirs(out_put_path)
             else:
-                out_put_path = "/home/ubuntu/temp/"+tickers_list+"/"+today+"/"
+                out_put_path = "/home/ubuntu/algo_temp/"+tickers_list+"/"+today+"/"
                 os.makedirs(out_put_path)
 
 
