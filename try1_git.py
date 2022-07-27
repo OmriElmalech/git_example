@@ -87,7 +87,7 @@ while 1:
         d = pd.concat([d,new_data])
         # d = d.append(new_data)
         next_minute = datetime.now()+timedelta(minutes=1)-timedelta(seconds=datetime.now().second,microseconds=datetime.now().microsecond)
-        while datetime.now() < next_minute
+        while datetime.now() < next_minute:
             time.sleep(1)
         data_avail_flag = 1
 
