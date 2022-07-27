@@ -175,8 +175,6 @@ while 1:
 
         # print(d.tail(10))
 
-        # print("--- %s seconds ---" % (time.time() - start_time))
-
         local_file_name = tickers_list + '_' + str(file_count) + r'.csv'
 
         (d.head(d.shape[0]-1)).to_csv(out_put_path  + local_file_name)
@@ -207,7 +205,6 @@ while 1:
             trade_start = trade_start + timedelta(days=1)
             sleep_time = round((trade_start - datetime.now()).total_seconds())
             trade_end = trade_end + timedelta(days=1)
-            file_count = 0
             if os.path.exists(out_put_path):
                 shutil.rmtree(out_put_path)
                 out_put_path = "/home/ubuntu/algo_temp/"+tickers_list+"/"+today+"/"
