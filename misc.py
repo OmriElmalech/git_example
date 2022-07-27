@@ -14,9 +14,7 @@ from io import StringIO # python3; python2: BytesIO
 
 minute = datetime(int(str(datetime.now()).split('-')[0]),int(str(datetime.now()).split('-')[1]),int(str(datetime.now()).split('-')[2].split(' ')[0]), 0, 1, 0, 0)
 
-
-print(datetime.now())
-print(datetime.now()+timedelta(minutes=1)-timedelta(seconds=datetime.now().second,microseconds=datetime.now().microsecond))
-print(datetime.now())
+d = yf.download(tickers="TSLA", period="1d", interval="1m", progress=False).tail(2).head(1)
+print(d)
 
 # day = datetime(0 , 0 , 1 , 0, 0, 0, 0)

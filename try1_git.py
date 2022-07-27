@@ -82,7 +82,7 @@ while 1:
         count = count + 1
         # print('count = ',count)
         # print('time = ',datetime.now())
-        new_data = yf.download(tickers=tickers_list, period="1d", interval="1m", progress=False).tail(1)
+        new_data = yf.download(tickers="TSLA", period="1d", interval="1m", progress=False).tail(2).head(1)
         print(new_data)
         d = pd.concat([d,new_data])
         # d = d.append(new_data)
