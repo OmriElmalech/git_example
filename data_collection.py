@@ -48,7 +48,7 @@ trade_start = datetime(int(str(datetime.now()).split('-')[0]),int(str(datetime.n
 trade_end = datetime(int(str(datetime.now()).split('-')[0]),int(str(datetime.now()).split('-')[1]),int(str(datetime.now()).split('-')[2].split(' ')[0]), 20, 0, 0)
 
 # trade_start = datetime.now()
-# trade_end = datetime.now() + timedelta(minutes=3)
+# trade_end = datetime.now() + timedelta(minutes=1)
 
 print('now is:')
 print(datetime.now())
