@@ -11,6 +11,10 @@ import pandas as pd
 import yfinance as yf
 from io import StringIO # python3; python2: BytesIO 
 
+def log_out(log_str):
+    log_file = open('run_output.log', 'a')
+    log_file.write(tickers_list+':'+log_str)
+    log_file.close
 
 start_time = time.time()
 s3 = boto3.resource('s3')
@@ -22,15 +26,7 @@ tickers_list = sys.argv[1]
 run_flag = 'on'
 data_avail_flag = 0
 
-if os.path.exists('run_log_'+today+'.txt'):
-    os.remove('run_log_'+today+'.txt')
-    log_file = open('run_log_'+today+'.txt', 'w')
-    log_file.write('run log \n run started: '+str(datetime.now()))
-    log_file.close
-else:
-    log_file = open('run_log_'+today+'.txt', 'w')
-    log_file.write('run log \n run started: '+str(datetime.now()))
-    log_file.close
+log_out(' run started: '+str(datetime.now()))
 
 hist = yf.download(tickers=tickers_list, period="2d", interval="1d", progress=False).head(1)
 d = yf.download(tickers=tickers_list, period="1d", interval="1m", progress=False).tail(1)
@@ -73,13 +69,17 @@ while 1:
         sleep_time = round((trade_start - datetime.now()).total_seconds())
         print('trading starts in '+str(trade_start - datetime.now()))
         print("going to sleep till trade open")
+        log_out(' trading starts in '+str(trade_start - datetime.now()))
+        log_out(" going to sleep till trade open")
 
         if sleep_time > 1800:
             time.sleep(600)
             print('trading starts in '+str(trade_start - datetime.now()))
+            log_out(' trading starts in '+str(trade_start - datetime.now()))
         else:
             time.sleep(sleep_time)
             trade_flag = 'on'
+            log_out(" trade_flag = on")
 
     while datetime.now() > trade_start and datetime.now() < trade_end:
         count = count + 1
@@ -183,11 +183,13 @@ while 1:
 
         (d.head(d.shape[0]-1)).to_csv(out_put_path+"/"+today+"/"  + local_file_name)
         print('file: '+ local_file_name +' was saved locally')
+        log_out(' file: '+ local_file_name +' was saved locally')
 
         try:
             output_file_name = tickers_list+'_'+ str(datetime.now()) +'_'+str(file_count) +'.csv'
             s3.Bucket(BUCKET).upload_file(out_put_path+"/"+today+"/" + local_file_name, "from_ubuntu/hist_data/"+tickers_list+"_hist_daily/"+today+"/"+output_file_name)
             print('file: '+output_file_name+' was written to S3')
+            log_out(' file: '+output_file_name+' was written to S3')
         except Exception as no_s3_write:
             log_file = open('run_log_'+today+'.txt', 'a')
             log_file.write('\n'+str(datetime.now())+' -->  '+tickers_list+': '+no_s3_write+'\n')
@@ -209,6 +211,7 @@ while 1:
             trade_start = trade_start + timedelta(days=1)
             sleep_time = round((trade_start - datetime.now()).total_seconds())
             print("new spleep time: " + str(sleep_time))
+            log_out(" new spleep time: " + str(sleep_time))
             trade_end = trade_end + timedelta(days=1)
             if os.path.exists(out_put_path):
                 shutil.rmtree(out_put_path)
