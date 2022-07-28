@@ -96,9 +96,10 @@ while 1:
             time.sleep(1)
         data_avail_flag = 1
         time.sleep(3)
+        log_out(' '+str(datetime.now()-timedelta(seconds=datetime.now().second,microseconds=datetime.now().microsecond))+' data appended')
 
         if count == 90:
-        #if count == 3:
+        #if count == 5:
             count = 0
             break
 
@@ -181,6 +182,7 @@ while 1:
 
         # print(d.tail(10))
 
+        log_out(' feature extraction done')
         local_file_name = tickers_list + '_' + str(file_count) + r'.csv'
 
         (d.head(d.shape[0]-1)).to_csv(out_put_path+"/"+today+"/"  + local_file_name)
@@ -193,9 +195,7 @@ while 1:
             print('file: '+output_file_name+' was written to S3')
             log_out(' file: '+output_file_name+' was written to S3')
         except Exception as no_s3_write:
-            log_file = open('run_log_'+today+'.txt', 'a')
-            log_file.write('\n'+str(datetime.now())+' -->  '+tickers_list+': '+no_s3_write+'\n')
-            log_file.close
+            log_out(' '+str(datetime.now())+' -->  '+tickers_list+': '+no_s3_write)
 
         d = d.tail(3)
         if datetime.now() > trade_start and datetime.now() < trade_end:
