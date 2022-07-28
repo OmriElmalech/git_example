@@ -33,12 +33,12 @@ hist = yf.download(tickers=tickers_list, period="2d", interval="1d", progress=Fa
 d = yf.download(tickers=tickers_list, period="1d", interval="1m", progress=False).tail(1)
 d = pd.concat([hist,d])
 
-out_put_path = "/home/ubuntu/algo_temp/"+tickers_list+"/"+today+"/"
+out_put_path = "/home/ubuntu/algo_temp/"
 if os.path.exists(out_put_path):
     shutil.rmtree(out_put_path)
-    os.makedirs(out_put_path)
+    os.makedirs(out_put_path+tickers_list+"/"+today+"/")
 else:
-    os.makedirs(out_put_path)
+    os.makedirs(out_put_path+tickers_list+"/"+today+"/")
 local_file_name = ''
 count = 0
 file_count = 1
@@ -177,12 +177,12 @@ while 1:
 
         local_file_name = tickers_list + '_' + str(file_count) + r'.csv'
 
-        (d.head(d.shape[0]-1)).to_csv(out_put_path  + local_file_name)
+        (d.head(d.shape[0]-1)).to_csv(out_put_path + tickers_list+"/"+today+"/"  + local_file_name)
         print('file: '+ local_file_name +' was saved locally')
 
         try:
             output_file_name = tickers_list+'_'+ str(datetime.now()) +'_'+str(file_count) +'.csv'
-            s3.Bucket(BUCKET).upload_file(out_put_path + local_file_name, "from_ubuntu/hist_data/"+tickers_list+"_hist_daily/"+today+"/"+output_file_name)
+            s3.Bucket(BUCKET).upload_file(out_put_path +tickers_list+"/"+today+"/" + local_file_name, "from_ubuntu/hist_data/"+tickers_list+"_hist_daily/"+today+"/"+output_file_name)
             print('file: '+output_file_name+' was written to S3')
         except Exception as no_s3_write:
             log_file = open('run_log_'+today+'.txt', 'a')
@@ -208,11 +208,9 @@ while 1:
             trade_end = trade_end + timedelta(days=1)
             if os.path.exists(out_put_path):
                 shutil.rmtree(out_put_path)
-                out_put_path = "/home/ubuntu/algo_temp/"+tickers_list+"/"+today+"/"
-                os.makedirs(out_put_path)
+                os.makedirs(out_put_path+tickers_list+"/"+today+"/")
             else:
-                out_put_path = "/home/ubuntu/algo_temp/"+tickers_list+"/"+today+"/"
-                os.makedirs(out_put_path)
+                os.makedirs(out_put_path+tickers_list+"/"+today+"/")
 
 
 
