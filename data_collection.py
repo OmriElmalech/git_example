@@ -23,7 +23,10 @@ run_flag = 'on'
 data_avail_flag = 0
 
 if os.path.exists('run_log_'+today+'.txt'):
-  os.remove('run_log_'+today+'.txt')
+    os.remove('run_log_'+today+'.txt')
+    log_file = open('run_log_'+today+'.txt', 'w')
+    log_file.write('run log \n run started: '+str(datetime.now()))
+    log_file.close
 else:
     log_file = open('run_log_'+today+'.txt', 'w')
     log_file.write('run log \n run started: '+str(datetime.now()))
@@ -90,6 +93,7 @@ while 1:
         while datetime.now() < next_minute:
             time.sleep(1)
         data_avail_flag = 1
+        time.sleep(3)
 
         if count == 90:
         #if count == 3:
