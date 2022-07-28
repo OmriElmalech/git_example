@@ -1,4 +1,5 @@
 rm -f nohup.out
+rm run_output.log
 touch run_output.log
 nohup python3 data_collection.py NFLX &
 nohup python3 data_collection.py INTC &

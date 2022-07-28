@@ -13,7 +13,7 @@ from io import StringIO # python3; python2: BytesIO
 
 def log_out(log_str):
     log_file = open('run_output.log', 'a')
-    log_file.write(tickers_list+':'+log_str)
+    log_file.write('\n'+tickers_list+':'+log_str)
     log_file.close
 
 start_time = time.time()
@@ -86,7 +86,9 @@ while 1:
         # print('count = ',count)
         # print('time = ',datetime.now())
         new_data = yf.download(tickers=tickers_list, period="1d", interval="1m", progress=False).tail(2).head(1)
-        print(new_data)
+        while str(new_data.index).split(",")[0] == str(d.tail(1).index).split(",")[0]:
+            time.sleep(0.5)
+            new_data = yf.download(tickers=tickers_list, period="1d", interval="1m", progress=False).tail(2).head(1)
         d = pd.concat([d,new_data])
         # d = d.append(new_data)
         next_minute = datetime.now()+timedelta(minutes=1)-timedelta(seconds=datetime.now().second,microseconds=datetime.now().microsecond)

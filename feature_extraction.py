@@ -13,15 +13,17 @@ from io import StringIO # python3; python2: BytesIO
 import matplotlib.pyplot as plt 
 
 
-day_of_data = "2022-07-26"
-end_date = "2022-07-27"
+day_of_data = "2022-07-27"
+end_date = "2022-07-28"
 ticker = "TSLA"
 d = yf.download(tickers=ticker, start=day_of_data , end=end_date, interval="1m", progress=False)
 # print(d)
 
 last_day_data = yf.download(tickers=ticker, period="2d", interval="1d", progress=False).head(1)
 day_open = d.head(1)['Open'].item()
-print(day_open)
+new_data = yf.download(tickers=ticker, period="1d", interval="1m", progress=False).tail(2).head(1)
+print(str(new_data.index).split(",")[0])
+print('day open = '+str(day_open))
 avg = list()
 dt = list()
 t_point = list()
