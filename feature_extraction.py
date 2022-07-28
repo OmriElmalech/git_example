@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 import os
 from turtle import clear
 import numpy as np
+import numpy.fft as fft
 import pandas as pd
 import yfinance as yf
 from io import StringIO # python3; python2: BytesIO
@@ -106,13 +107,34 @@ def get_data(ticker):
     # day = datetime(0 , 0 , 1 , 0, 0, 0, 0)
     return(d1)
 
-tsla_data = get_data("TSLA")
-nflx_data = get_data("NFLX")
+stock1_ticker = "INTC"
+stock2_ticker = "META"
 
-tsla_xpoints = tsla_data['time_point']
-tsla_ypoints = tsla_data['CloseOpenDiffPrcnt']
-nflx_ypoints = nflx_data['CloseOpenDiffPrcnt']
+stock1_data = get_data(stock1_ticker)
+stock2_data = get_data(stock2_ticker)
 
-plt.plot( tsla_xpoints, tsla_ypoints,tsla_xpoints, nflx_ypoints)
+stock1_xpoints = stock1_data['time_point']
+stock1_ypoints = stock1_data['CloseOpenDiffPrcnt']
+stock2_ypoints = stock2_data['CloseOpenDiffPrcnt']
+
+plt.plot( stock1_xpoints, stock1_ypoints,stock1_xpoints, stock2_ypoints)
 # plt.plot(xpoints, y1points , xpoints, y2points)
 plt.show()
+stock1_ypoints_fft = fft.fft(stock1_ypoints.values)
+stock2_ypoints_fft = fft.fft(stock2_ypoints.values)
+
+# Number of samplepoints
+N = 390
+# sample spacing
+T = 1.0
+x = np.linspace(0.0, N*T, N)
+xf = np.linspace(0.0, 1.0/(2.0*T), N//2)
+
+fig, ax = plt.subplots()
+plt.plot(xf, 2.0/N * np.abs(stock2_ypoints_fft[:N//2]), "-b", label=stock1_ticker)
+plt.plot(xf, 2.0/N * np.abs(stock1_ypoints_fft[:N//2]), "-r", label=stock2_ticker)
+plt.legend(loc="upper left")
+plt.show()
+
+# plt.plot( nflx_ypoints_fft)
+# plt.show()
