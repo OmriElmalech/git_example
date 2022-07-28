@@ -201,7 +201,7 @@ while 1:
             file_count = 1
             run_flag = 'off'
             
-            today = (str(datetime.now()).split('-')[0] + '-' + str(datetime.now()).split('-')[1] + '-' + str(datetime.now()).split('-')[2].split(' ')[0]) + timedelta(days=1)
+            today = (str(datetime.now() + timedelta(days=1)).split('-')[0] + '-' + str(datetime.now() + timedelta(days=1)).split('-')[1] + '-' + str(datetime.now() + timedelta(days=1)).split('-')[2].split(' ')[0])
             trade_start = trade_start + timedelta(days=1)
             sleep_time = round((trade_start - datetime.now()).total_seconds())
             trade_end = trade_end + timedelta(days=1)
