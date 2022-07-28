@@ -96,7 +96,7 @@ while 1:
             time.sleep(1)
         data_avail_flag = 1
         time.sleep(3)
-        log_out(' '+str(datetime.now()-timedelta(seconds=datetime.now().second,microseconds=datetime.now().microsecond))+' data appended')
+        log_out(' '+str(datetime.now())+' data appended')
 
         if count == 90:
         #if count == 5:
@@ -106,7 +106,9 @@ while 1:
     time.sleep(0.5)
 
     if data_avail_flag == 1:
+        log_out(' data_availble')
         last_day_data = yf.download(tickers=tickers_list, period="2d", interval="1d", progress=False).head(1)
+        log_out(' got last day data')
         avg = list()
         dt = list()
         last_day_close = list()
@@ -127,6 +129,8 @@ while 1:
         # movingAvg300Grad = list()
 
 
+        log_out(' defined lists')
+        
         # d = yf.download(tickers=tickers_list, period="1d", interval="1m", progress=False).tail(10)
         # last_day_data = yf.download(tickers=tickers_list, period="2d", interval="1d", progress=False).head(1)
 
