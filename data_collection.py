@@ -82,7 +82,7 @@ while 1:
         count = count + 1
         # print('count = ',count)
         # print('time = ',datetime.now())
-        new_data = yf.download(tickers="TSLA", period="1d", interval="1m", progress=False).tail(2).head(1)
+        new_data = yf.download(tickers=tickers_list, period="1d", interval="1m", progress=False).tail(2).head(1)
         print(new_data)
         d = pd.concat([d,new_data])
         # d = d.append(new_data)
@@ -194,7 +194,7 @@ while 1:
             run_flag = 'on'
             file_count = file_count + 1
         else:
-            time.sleep(60)
+            time.sleep(10)
             data_avail_flag = 0
             hist = yf.download(tickers=tickers_list, period="2d", interval="1d", progress=False).head(1)
             d = yf.download(tickers=tickers_list, period="1d", interval="1m", progress=False).tail(1)
@@ -204,6 +204,7 @@ while 1:
             today = (str(datetime.now() + timedelta(days=1)).split('-')[0] + '-' + str(datetime.now() + timedelta(days=1)).split('-')[1] + '-' + str(datetime.now() + timedelta(days=1)).split('-')[2].split(' ')[0])
             trade_start = trade_start + timedelta(days=1)
             sleep_time = round((trade_start - datetime.now()).total_seconds())
+            print("new spleep time: " + str(sleep_time))
             trade_end = trade_end + timedelta(days=1)
             if os.path.exists(out_put_path):
                 shutil.rmtree(out_put_path)
