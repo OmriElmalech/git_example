@@ -14,8 +14,8 @@ from io import StringIO # python3; python2: BytesIO
 import matplotlib.pyplot as plt 
 
 
-day_of_data = "2022-07-27"
-end_date = "2022-07-28"
+day_of_data = "2022-07-28"
+end_date = "2022-07-29"
 #ticker = "TSLA"
 # print(d)
 
@@ -107,7 +107,7 @@ def get_data(ticker):
     # day = datetime(0 , 0 , 1 , 0, 0, 0, 0)
     return(d1)
 
-stock1_ticker = "INTC"
+stock1_ticker = "DIS"
 stock2_ticker = "META"
 
 stock1_data = get_data(stock1_ticker)
@@ -117,9 +117,12 @@ stock1_xpoints = stock1_data['time_point']
 stock1_ypoints = stock1_data['CloseOpenDiffPrcnt']
 stock2_ypoints = stock2_data['CloseOpenDiffPrcnt']
 
-plt.plot( stock1_xpoints, stock1_ypoints,stock1_xpoints, stock2_ypoints)
-# plt.plot(xpoints, y1points , xpoints, y2points)
-plt.show()
+# plt1 = plt.plot( stock1_xpoints, stock1_ypoints,stock1_xpoints, stock2_ypoints)
+fig1 = plt.figure(1)
+plt.plot(stock1_xpoints, stock1_ypoints, "-b", label=stock1_ticker)
+plt.plot(stock1_xpoints, stock2_ypoints, "-r", label=stock2_ticker)
+plt.legend(loc="upper left")
+fig1.show()
 stock1_ypoints_fft = fft.fft(stock1_ypoints.values)
 stock2_ypoints_fft = fft.fft(stock2_ypoints.values)
 
@@ -133,7 +136,9 @@ xf = np.linspace(0.0, 1.0/(2.0*T), N//2)
 fig, ax = plt.subplots()
 plt.plot(xf, 2.0/N * np.abs(stock2_ypoints_fft[:N//2]), "-b", label=stock1_ticker)
 plt.plot(xf, 2.0/N * np.abs(stock1_ypoints_fft[:N//2]), "-r", label=stock2_ticker)
-plt.legend(loc="upper left")
+plt.legend(loc="upper right")
+plt.ylim(-0.1, 1.0)
+plt.xlim(0, 0.075)
 plt.show()
 
 # plt.plot( nflx_ypoints_fft)
