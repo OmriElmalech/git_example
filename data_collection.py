@@ -83,12 +83,17 @@ while 1:
 
     while datetime.now() > trade_start and datetime.now() < trade_end:
         count = count + 1
-        # print('count = ',count)
-        # print('time = ',datetime.now())
-        new_data = yf.download(tickers=tickers_list, period="1d", interval="1m", progress=False).tail(2).head(1)
+        try:
+            new_data = yf.download(tickers=tickers_list, period="1d", interval="1m", progress=False).tail(2).head(1)
+        except Exception as no_new_data:
+            log_out(' '+str(datetime.now())+' -->  '+tickers_list+': '+no_new_data)
+
         while str(new_data.index).split(",")[0] == str(d.tail(1).index).split(",")[0]:
             time.sleep(0.5)
-            new_data = yf.download(tickers=tickers_list, period="1d", interval="1m", progress=False).tail(2).head(1)
+            try:
+                new_data = yf.download(tickers=tickers_list, period="1d", interval="1m", progress=False).tail(2).head(1)
+            except Exception as no_new_data:
+                log_out(' '+str(datetime.now())+' -->  '+tickers_list+': '+no_new_data)
         d = pd.concat([d,new_data])
         # d = d.append(new_data)
         next_minute = datetime.now()+timedelta(minutes=1)-timedelta(seconds=datetime.now().second,microseconds=datetime.now().microsecond)
@@ -96,7 +101,7 @@ while 1:
             time.sleep(1)
         data_avail_flag = 1
         time.sleep(3)
-        log_out(' '+str(datetime.now())+' data appended')
+        log_out(' '+str(datetime.now()+timedelta(seconds=1))+' data appended')
 
         if count == 90:
         #if count == 5:
@@ -130,7 +135,7 @@ while 1:
 
 
         log_out(' defined lists')
-        
+
         # d = yf.download(tickers=tickers_list, period="1d", interval="1m", progress=False).tail(10)
         # last_day_data = yf.download(tickers=tickers_list, period="2d", interval="1d", progress=False).head(1)
 
