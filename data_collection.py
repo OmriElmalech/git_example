@@ -1,4 +1,4 @@
-import imp
+# import imp
 import sys
 import boto3
 import shutil
@@ -86,14 +86,14 @@ while 1:
         try:
             new_data = yf.download(tickers=tickers_list, period="1d", interval="1m", progress=False).tail(2).head(1)
         except Exception as no_new_data:
-            log_out(' '+str(datetime.now())+' -->  '+tickers_list+': '+no_new_data)
+            log_out(' '+str(datetime.now())+' exception:  '+tickers_list+': '+no_new_data)
 
         while str(new_data.index).split(",")[0] == str(d.tail(1).index).split(",")[0]:
             time.sleep(0.5)
             try:
                 new_data = yf.download(tickers=tickers_list, period="1d", interval="1m", progress=False).tail(2).head(1)
             except Exception as no_new_data:
-                log_out(' '+str(datetime.now())+' -->  '+tickers_list+': '+no_new_data)
+                log_out(' '+str(datetime.now())+' exception:  '+tickers_list+': '+no_new_data)
         d = pd.concat([d,new_data])
         # d = d.append(new_data)
         next_minute = datetime.now()+timedelta(minutes=1)-timedelta(seconds=datetime.now().second,microseconds=datetime.now().microsecond)
