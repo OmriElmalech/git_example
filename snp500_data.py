@@ -17,7 +17,7 @@ import squeeze_mom_benchmark as sm
 
 start_time = time.time()
 
-day_of_data = datetime.now()-timedelta(days=365)
+day_of_data = datetime.now()-timedelta(days=100)
 # day_of_data = "2022-07-28"
 end_date = "2022-07-29"
 #ticker = "TSLA"
@@ -40,12 +40,16 @@ change_stdev = list()
 left_3sig = list()
 period_change = list()
 sm_chng = list()
+sm_last_day_sig = list()
+change_diff = list()
 
 ######        squeeze momentum parameters       #########
+
 boll_lookback = 20
 boll_vol = 2
 kelt_lookback = 20
 kelt_vol = 1.5
+
 #########################################################
 
 req = Request('https://www.slickcharts.com/sp500', headers={'User-Agent': 'Mozilla/5.0'})
@@ -53,13 +57,15 @@ table=pd.read_html(urlopen(req))
 
 for row in table[0]['Symbol']:
     change_prctg = list()
-    if row == 'BRK.B':
+    data = get_data(row)
+    if data.empty:
         continue
-    else:
-        data = get_data(row)
+
     # print('change % = '+str(sm.buy_sell(sm.squeeze(data.to_numpy(), boll_lookback, boll_vol, kelt_lookback, kelt_vol, 3, 4))))
     try:
-        sm_chng.append(sm.buy_sell(sm.squeeze(data.to_numpy(), boll_lookback, boll_vol, kelt_lookback, kelt_vol, 3, 4)))
+        [sm_chng_prct,last_day_sig] = sm.buy_sell(sm.squeeze(data.to_numpy(), boll_lookback, boll_vol, kelt_lookback, kelt_vol, 3, 4))
+        sm_chng.append(sm_chng_prct)
+        sm_last_day_sig.append(last_day_sig)
     except ValueError:
         continue
     
@@ -81,15 +87,17 @@ for row in table[0]['Symbol']:
 #     change_stdev.append(np.std(change_prctg))
 #     left_3sig.append(np.mean(change_prctg)-3*np.std(change_prctg))
 #     # snp500_ticker_list.append(row)
+    change_diff.append(sm_chng_prct - (100*(end_price-start_price)/start_price))
     count = count + 1
     print('count = '+str(count))
-    if count == 100:
-        break
-
+    # if count == 5:
+    #     break
 
 snp500_ticker_list['symbol'] = sym
 snp500_ticker_list['period_change'] = period_change
 snp500_ticker_list['Squeeze Momentum change'] = sm_chng
+snp500_ticker_list['change diff'] = change_diff
+snp500_ticker_list['sm last day sig'] = sm_last_day_sig
 # snp500_ticker_list['year_long_days_change_mean'] = change_mean
 # snp500_ticker_list['year_long_days_change_stdev'] = change_stdev
 # snp500_ticker_list['left_3sig'] = left_3sig

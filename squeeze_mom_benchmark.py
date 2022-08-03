@@ -209,16 +209,16 @@ boll_vol = 2
 kelt_lookback = 20
 kelt_vol = 1.5
 
-day_of_data = datetime.now()-timedelta(days=450)
-# day_of_data = "2022-07-28"
-ticker = "AMZN"
-end_date = "2022-07-29"
+# day_of_data = datetime.now()-timedelta(days=450)
+# ticker = "AMZN"
+# end_date = "2022-07-29"
 
-# print(pd.read_csv('https://raw.githubusercontent.com/plotly/datasets/master/finance-charts-apple.csv').head(10))
-my_data = yf.download(tickers=ticker, start=day_of_data , interval="1d", progress=False).to_numpy()
-print(my_data[0:10,:])
 # my_data = pd.read_csv('https://raw.githubusercontent.com/plotly/datasets/master/finance-charts-apple.csv').to_numpy()[:,1:5]
-my_data = squeeze(my_data, boll_lookback, boll_vol, kelt_lookback, kelt_vol, 3, 4)
+
+# my_data = yf.download(tickers=ticker, start=day_of_data , interval="1d", progress=False).to_numpy()
+# print(my_data[0:10,:])
+
+# my_data = squeeze(my_data, boll_lookback, boll_vol, kelt_lookback, kelt_vol, 3, 4)
 
 def indicator_plot_squeeze(Data, window = 250):
     fig, ax = plt.subplots(3, figsize = (10, 5))
@@ -266,7 +266,7 @@ def indicator_plot_squeeze(Data, window = 250):
     fig.savefig('full_figure.png')
     fig.show()
 
-indicator_plot_squeeze(my_data)
+# indicator_plot_squeeze(my_data)
 
 def signal(Data):
     for i in range(len(Data)):   
@@ -289,16 +289,24 @@ def buy_sell(Data):
     green = 6
     blue = 10
     pink = 11
-
-    Data = Data[-250:, ]
-
-    for i in range(2,250):   
+    signal = 'hold'
+    print(np.size(Data,axis=0))
+    Data = Data[-(min(250,np.size(Data,axis=0)-1)):, ]
+    n_days = min(250,np.size(Data,axis=0)-1)
+    for i in range(2,n_days):   
         # buy Signal
-        if Data[i, 1] > limit*1.105:
+        if Data[i, 1] > limit*1.05:
             limit = Data[i, 1]
 
+        if Data[i, 1] > Data[i,green]:
+            signal = 'Buy'
+        elif ((Data[i, 2] < Data[i,blue] and ((Data[i-1,16]-Data[i-2,16])/Data[i-2,16])<(-0.05)) or (Data[i, 2]<limit*0.995)):
+            signal = 'sell'
+        else:
+            signal = 'hold'
+
         # if Data[i, 1] > Data[i,6] and ((Data[i-1,16]-Data[i-2,16])/Data[i-2,16])>(-0.1) and money_avail_flag == 1: 
-        if Data[i, 1] > Data[i,green] and money_avail_flag == 1: 
+        if signal == 'Buy' and money_avail_flag == 1: 
                 Data[i, 17] = 1
                 money_avail_flag = 0
                 buy_price = Data[i, 2]
@@ -306,7 +314,7 @@ def buy_sell(Data):
                 # print(str(i)+':  buy_price= '+str(buy_price))
                     
         # sell Signal
-        elif ((Data[i, 2] < Data[i,blue] and ((Data[i-1,16]-Data[i-2,16])/Data[i-2,16])<(-0.1)) or (Data[i, 2]<limit*0.995)) and money_avail_flag == 0:
+        elif signal == 'sell' and money_avail_flag == 0:
                 Data[i, 17] = -1
                 money_avail_flag = 1
                 sell_price = Data[i, 2]
@@ -316,6 +324,7 @@ def buy_sell(Data):
                 # print(100*(money-10000)/100000)
 
         # print(Data[i, 17])
-    return 100*(money-100000)/100000
+    print(signal)
+    print('change % = '+str(100*(money-100000)/100000))
+    return [100*(money-100000)/100000,signal]
 
-print('change % = '+str(buy_sell(my_data)))
